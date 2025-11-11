@@ -49,7 +49,7 @@ app.post('/generate-key', async (req, res) => {
         const finalApiKey = crypto.randomBytes(32).toString('hex');
 
         // 2. Simpan ke Database (Pakai backticks keys)
-        const sql = "INSERT INTO `keys` (nama_key, api_key, izin) VALUES (?, ?, ?)";
+        const sql = "INSERT INTO `keys` (name_key, api_key, izin) VALUES (?, ?, ?)";
         
         // Catatan: Gunakan backticks (`) untuk nama tabel 'keys' jika itu adalah kata kunci MySQL!
         const [result] = await pool.execute(sql, [keyName, finalApiKey, keyPermissions]);
