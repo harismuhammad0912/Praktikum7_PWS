@@ -3,193 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Key Generator</title>
+    <title>Generate API Key - UI Modern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Gaya dasar untuk body */
+        /* BASE & DARK MODE STYLES */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Ubah agar tidak terlalu di tengah jika konten banyak */
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
             box-sizing: border-box;
         }
 
-        /* Container utama untuk form */
-        .api-key-container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        /* MAIN CONTAINER */
+        .api-key-wrapper {
+            max-width: 1000px;
             width: 100%;
-            max-width: 500px;
+            background-color: #21213b; /* Slightly lighter background for the card */
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            padding: 30px;
         }
 
-        /* Judul form */
-        h2 {
-            color: #333;
-            text-align: center;
+        /* HEADER */
+        .header {
+            border-bottom: 1px solid #3a3a5a;
+            padding-bottom: 15px;
             margin-bottom: 25px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Gaya untuk setiap grup input (label + input) */
+        .header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            margin-top: 5px;
+        }
+        
+        .access-tag {
+            background-color: #3f72af;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        /* GRID LAYOUT (FORMDAN PREVIEW) */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two equal columns for desktop */
+            gap: 40px;
+        }
+
+        /* FORM STYLES */
+        .form-section {
+            padding-right: 20px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
 
-        /* Gaya untuk label */
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #c0c0d8;
             font-weight: 600;
         }
 
-        /* Gaya untuk semua input teks dan select */
         input[type="text"], 
-        input[type="email"], 
-        select {
+        select,
+        textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
+            background-color: #32324e;
+            border: 1px solid #4a4a75;
             border-radius: 8px;
-            box-sizing: border-box; /* Penting untuk responsivitas */
-            font-size: 16px;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            color: #ffffff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
         }
 
         input[type="text"]:focus,
-        input[type="email"]:focus,
-        select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        select:focus,
+        textarea:focus {
+            border-color: #6c5ce7; /* Purple focus color */
             outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
         }
 
-        /* Gaya untuk tombol */
+        select {
+            appearance: none; /* Remove default select styling */
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        
         .btn-generate {
-            background-color: #28a745; /* Warna hijau untuk Generate */
-            color: white;
-            padding: 14px 20px;
+            background-color: #2ecc71; /* Green color */
+            color: #1a1a2e;
+            padding: 12px 25px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            width: 100%;
-            font-size: 18px;
+            font-size: 1rem;
             font-weight: bold;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
+            width: 48%; /* Adjust width for positioning next to Save */
+            margin-right: 4%;
         }
-
-        .btn-generate:hover {
-            background-color: #218838;
-        }
-
-        /* Gaya untuk output API Key yang dihasilkan (Opsional, untuk tampilan) */
-        #api-key-output {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border: 1px dashed #adb5bd;
+        
+        .btn-save {
+            background-color: #6c5ce7; /* Purple color */
+            color: white;
+            padding: 12px 25px;
+            border: none;
             border-radius: 8px;
-            font-family: 'Courier New', Courier, monospace;
-            word-wrap: break-word;
-            text-align: center;
-            color: #495057;
-            font-size: 14px;
-            display: none; /* Sembunyikan secara default */
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            width: 48%;
         }
 
-        /* Responsivitas (Media Query) */
-        @media (max-width: 600px) {
-            .api-key-container {
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            }
+        .btn-generate:hover { background-color: #27ae60; }
+        .btn-save:hover { background-color: #5d48d1; }
+        
+        .form-actions {
+            display: flex;
+            margin-bottom: 15px;
+        }
 
-            h2 {
-                font-size: 1.5em;
-            }
+        .form-notes {
+            font-size: 0.8rem;
+            color: #a0a0c0;
+            line-height: 1.4;
+            border-top: 1px dashed #3a3a5a;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
 
-            .btn-generate {
-                padding: 12px 15px;
-                font-size: 16px;
+        /* PREVIEW STYLES */
+        .preview-section {
+            background-color: #1a1a2e; /* Darker background for distinction */
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #3a3a5a;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .preview-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .btn-toggle {
+            background: none;
+            border: none;
+            color: #9b59b6; /* Purple button */
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .key-box {
+            background-color: #32324e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #6c5ce7;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        #displayedKey {
+            word-break: break-all;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #f1c40f; /* Yellowish key color */
+        }
+        
+        .key-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-copy, .btn-regenerate {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-copy {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        .btn-regenerate {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+        
+        textarea#description {
+            height: 80px;
+            resize: none;
+        }
+
+        .version-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+        }
+
+        /* RESPONSIVENESS */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+            
+            .form-section {
+                padding-right: 0;
+            }
+            
+            .preview-section {
+                margin-top: 20px;
+            }
+            
+            .btn-generate, .btn-save {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .form-actions {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="api-key-container">
-    <h2>🔑 API Key Generator</h2>
-    <form id="apiKeyForm">
-        
-        <div class="form-group">
-            <label for="appName">Nama Proyek/Aplikasi:</label>
-            <input type="text" id="appName" name="appName" placeholder="Contoh: Website E-commerce" required>
+<div class="api-key-wrapper">
+    <div class="header">
+        <div>
+            <h1>Generate API Key</h1>
+            <p>Buat dan kelola API key untuk integrasi layanan – aman, mudah, dan responsif.</p>
         </div>
-
-        <div class="form-group">
-            <label for="environment">Lingkungan Penggunaan:</label>
-            <select id="environment" name="environment" required>
-                <option value="" disabled selected>Pilih Lingkungan</option>
-                <option value="development">Development (Pengembangan)</option>
-                <option value="staging">Staging (Pengujian)</option>
-                <option value="production">Production (Produksi/Live)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="rateLimit">Batas Panggilan Per Menit (Opsional):</label>
-            <input type="text" id="rateLimit" name="rateLimit" placeholder="Contoh: 100">
-        </div>
-        
-        <div class="form-group">
-            <label for="contactEmail">Email Kontak Utama:</label>
-            <input type="email" id="contactEmail" name="contactEmail" placeholder="nama@email.com" required>
-        </div>
-
-        <button type="submit" class="btn-generate">Generate API Key Baru</button>
-
-    </form>
-    
-    <div id="api-key-output">
-        **API Key Anda:** <br>
-        <span id="generatedKey"></span>
+        <span class="access-tag">Akses: Public API</span>
     </div>
 
+    <div class="content-grid">
+        
+        <div class="form-section">
+            <form id="keyForm">
+                
+                <div class="form-group">
+                    <label for="keyName">Nama kunci (label)</label>
+                    <input type="text" id="keyName" name="keyName" value="Astii Nurul Utami" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="keyScope">Peran / Scope</label>
+                    <select id="keyScope" name="keyScope" required>
+                        <option value="admin">Admin (semua akses)</option>
+                        <option value="read_only">Read Only (hanya baca)</option>
+                        <option value="write_only">Write Only (hanya tulis)</option>
+                        <option value="custom">Custom (izin khusus)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyExpiry">Masa berlaku (opsional)</label>
+                    <select id="keyExpiry" name="keyExpiry">
+                        <option value="none">Tidak kadaluarsa</option>
+                        <option value="30d">30 hari</option>
+                        <option value="90d">90 hari</option>
+                        <option value="custom">Tentukan tanggal...</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-generate" onclick="simulateGenerateKey()">Generate Key</button>
+                    <button type="submit" class="btn-save">Simpan</button>
+                </div>
+                
+                <div class="form-notes">
+                    Catatan: Setelah disimpan, kunci hanya akan ditampilkan sekali. Pastikan menyimpannya di tempat aman.<br>
+                    Keamanan: Kunci dibuat melalui backend (Node.js + crypto).
+                </div>
+            </form>
+        </div>
+
+        <div class="preview-section">
+            <div class="preview-header">
+                <h3>Preview API Key</h3>
+                <button class="btn-toggle" onclick="toggleKeyVisibility(this)">Sembunyikan</button>
+            </div>
+            
+            <div class="key-box">
+                <span id="displayedKey">9836a5eb-14185d7e-365dca6f-56eba315</span>
+            </div>
+            <p style="font-size: 0.9rem; margin-top: -10px; color: #a0a0c0;">Pan. <span id="keyLength">35</span> chars</p>
+            
+            <div class="key-actions">
+                <button class="btn-copy" onclick="copyKey()">Copy</button>
+                <button class="btn-regenerate" onclick="simulateGenerateKey()">Regenerate</button>
+            </div>
+
+            <div class="form-group" style="margin-top: 30px;">
+                <label for="description">Catatan / Deskripsi (opsional)</label>
+                <textarea id="description" placeholder="Contoh: untuk integrasi mobile app versi 2"></textarea>
+            </div>
+
+            <div class="version-info">
+                Versi UI - 2.0 (Server Generated)
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
-    // Hanya untuk demo tampilan. Dalam implementasi nyata, 
-    // Anda akan mengirim data form ke backend untuk benar-benar menghasilkan kunci.
-    document.getElementById('apiKeyForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Mencegah form submit default
-        
-        // Data yang dikumpulkan (untuk dikirim ke server)
-        const appName = document.getElementById('appName').value;
-        const environment = document.getElementById('environment').value;
-        const rateLimit = document.getElementById('rateLimit').value;
-        const contactEmail = document.getElementById('contactEmail').value;
+    const keySpan = document.getElementById('displayedKey');
+    const keyLengthSpan = document.getElementById('keyLength');
+    
+    // Fungsi untuk menghasilkan key palsu
+    function generateFakeKey() {
+        return crypto.randomUUID().replace(/-/g, '').substring(0, 8) + '-' +
+               crypto.randomUUID().replace(/-/g, '').substring(0, 8) + '-' +
+               crypto.randomUUID().replace(/-/g, '').substring(0, 8) + '-' +
+               crypto.randomUUID().replace(/-/g, '').substring(0, 8).substring(0, 7);
+    }
+    
+    // Simulasi fungsi generate key (Frontend Only)
+    function simulateGenerateKey() {
+        // NOTE: Di aplikasi nyata, fungsi ini akan mengirim POST request ke backend
+        const newKey = generateFakeKey();
+        keySpan.textContent = newKey;
+        keyLengthSpan.textContent = newKey.length;
+    }
 
-        console.log("Data siap dikirim:", { appName, environment, rateLimit, contactEmail });
+    // Fungsi untuk menyalin key
+    function copyKey() {
+        navigator.clipboard.writeText(keySpan.textContent).then(() => {
+            alert('API Key berhasil disalin!');
+        }).catch(err => {
+            console.error('Gagal menyalin:', err);
+        });
+    }
 
-        // Simulasi pembuatan API Key (misalnya, string acak)
-        const fakeApiKey = 'pk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        
-        // Tampilkan hasil
-        document.getElementById('generatedKey').textContent = fakeApiKey;
-        document.getElementById('api-key-output').style.display = 'block';
-        
-        // Di aplikasi nyata, Anda akan menggunakan fetch() atau AJAX
-        // untuk mengirim data di atas ke server Anda, yang kemudian akan
-        // menyimpan konfigurasi dan mengembalikan API key yang valid.
-    });
+    // Fungsi untuk toggle visibilitas key
+    let isKeyVisible = true;
+    function toggleKeyVisibility(button) {
+        if (isKeyVisible) {
+            keySpan.textContent = '***********************************';
+            button.textContent = 'Tampilkan';
+            isKeyVisible = false;
+        } else {
+            // Dalam mode nyata, ini akan mengambil key dari DOM, BUKAN meregenerate
+            // Untuk demo, kita regenerate atau ambil key dari state yang tersimpan
+            keySpan.textContent = keySpan.dataset.originalKey || generateFakeKey();
+            button.textContent = 'Sembunyikan';
+            isKeyVisible = true;
+        }
+    }
+    
+    // Inisialisasi panjang key awal (berdasarkan key dummy)
+    keyLengthSpan.textContent = keySpan.textContent.length;
 </script>
 
 </body>

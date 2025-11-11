@@ -1,77 +1,76 @@
+console.log("===== TES RELOAD VERSI 2 =====");
 const express = require('express');
-const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const cors = require('cors');
+const mysql = require('mysql2/promise');
+const path = require('path'); 
+
 const app = express();
 const port = 3000;
 
-// Konfigurasi Body-Parser untuk mengambil data dari form
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// **CATATAN PENTING KEAMANAN:**
-// Di lingkungan produksi, Anda harus mengkonfigurasi CORS (Cross-Origin Resource Sharing)
-// untuk hanya mengizinkan domain frontend Anda mengakses API ini.
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Ubah * ke domain frontend Anda
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    next();
+// --- ⬇ PASTIKAN BAGIAN INI BENAR ⬇ ---
+const pool = mysql.createPool({
+    host: 'localhost',      // Server MySQL Anda (biasanya localhost)
+    user: 'root',           // User MySQL Anda
+    password: 'haris0912',            // Password MySQL Anda
+    database: 'tugas_api',
+    port: 3306   // Database yang BARU SAJA Anda buat
 });
 
-// Database Palsu (Simulasi penyimpanan di server)
-const apiKeysDatabase = [];
+// Tes koneksi
+pool.getConnection()
+    .then(connection => {
+        console.log('✅ Terhubung ke database MySQL!');
+        connection.release();
+    })
+   .catch(err => {
+    console.error('❌ ERROR KONEKSI DATABASE:', err.message); // Tampilkan hanya pesan error
+    // Pastikan database 'tugas_api' ada, user 'root' dan password 'haris0912' benar.
+});
+// --- ⬆ BAGIAN KONEKSI SELESAI ⬆ ---
 
-/**
- * Fungsi untuk menghasilkan API Key yang aman menggunakan modul crypto.
- * Menggunakan buffer acak 32-byte (256 bit) dan mengkonversinya ke heksadesimal.
- * @returns {string} API Key yang dihasilkan.
- */
-function generateSecureApiKey() {
-    // Menghasilkan 32 byte (256 bit) data acak
-    const randomBytes = crypto.randomBytes(32); 
-    // Mengkonversi ke string heksadesimal
-    const key = randomBytes.toString('hex');
-    return `pk_key_${key}`; // Prefix opsional untuk identifikasi
-}
 
-// 🌐 POST Endpoint untuk Generate API Key
-app.post('/generate-apikey', (req, res) => {
-    // 1. Ambil data dari request body (dari form HTML)
-    const { appName, environment, rateLimit, contactEmail } = req.body;
+// Rute POST untuk Generate Key
+app.post('/generate-key', async (req, res) => {
+    try {
+        const { keyName, keyPermissions } = req.body; 
+        
+        // Cek input dasar
+        if (!keyName || !keyPermissions) {
+             return res.status(400).json({ message: 'Nama Key dan Izin harus diisi.' });
+        }
+        
+        // 1. Generate Key (64 karakter hex)
+        const finalApiKey = crypto.randomBytes(32).toString('hex');
 
-    // 2. Validasi Input Dasar
-    if (!appName || !environment || !contactEmail) {
-        return res.status(400).json({ success: false, message: 'Nama Aplikasi, Lingkungan, dan Email wajib diisi.' });
+        // 2. Simpan ke Database (Pakai backticks keys)
+        const sql = "INSERT INTO `keys` (nama_key, api_key, izin) VALUES (?, ?, ?)";
+        
+        // Catatan: Gunakan backticks (`) untuk nama tabel 'keys' jika itu adalah kata kunci MySQL!
+        const [result] = await pool.execute(sql, [keyName, finalApiKey, keyPermissions]);
+
+        // PERBAIKAN SINTAKS 1: Menggunakan backticks
+        console.log(`Key baru berhasil disimpan. ID: ${result.insertId}`);
+            
+        // 3. Kirim key kembali ke front-end
+        res.status(200).json({ 
+            apiKey: finalApiKey,
+            message: 'Key berhasil dibuat dan disimpan di MySQL'
+        });
+
+    } catch (error) {
+        console.error('Error saat generate key:', error);
+        res.status(500).json({ message: 'Gagal membuat API key', error: error.message });
     }
-
-    // 3. Generate Kunci API
-    const newApiKey = generateSecureApiKey();
-
-    // 4. Simpan ke "Database" (dalam kasus ini, array)
-    const newKeyRecord = {
-        key: newApiKey,
-        appName: appName,
-        environment: environment,
-        rateLimit: rateLimit || 'N/A',
-        contactEmail: contactEmail,
-        createdAt: new Date().toISOString()
-    };
-    apiKeysDatabase.push(newKeyRecord);
-
-    console.log(`[SERVER LOG] Key baru dibuat untuk: ${appName} (${environment})`);
-    // console.log("Database saat ini:", apiKeysDatabase); // Debugging
-
-    // 5. Kirim respon sukses ke frontend, termasuk API Key
-    res.status(201).json({
-        success: true,
-        message: 'API Key berhasil dibuat dan disimpan.',
-        apiKey: newApiKey,
-        details: { appName, environment }
-    });
 });
 
-// 🚀 Jalankan Server
+// Jalankan server
 app.listen(port, () => {
-    console.log(`Server berjalan di http://localhost:${port}`);
-    console.log(`POST endpoint siap di http://localhost:${port}/generate-apikey`);
+    // PERBAIKAN SINTAKS 2: Menggunakan backticks
+    console.log(`Server API Key berjalan di http://localhost:${port}`);
 });
