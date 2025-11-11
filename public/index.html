@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Generator</title>
+    <style>
+        /* Gaya dasar untuk body */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Ubah agar tidak terlalu di tengah jika konten banyak */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Container utama untuk form */
+        .api-key-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* Judul form */
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        /* Gaya untuk setiap grup input (label + input) */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Gaya untuk label */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        /* Gaya untuk semua input teks dan select */
+        input[type="text"], 
+        input[type="email"], 
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box; /* Penting untuk responsivitas */
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            outline: none;
+        }
+
+        /* Gaya untuk tombol */
+        .btn-generate {
+            background-color: #28a745; /* Warna hijau untuk Generate */
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-generate:hover {
+            background-color: #218838;
+        }
+
+        /* Gaya untuk output API Key yang dihasilkan (Opsional, untuk tampilan) */
+        #api-key-output {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px dashed #adb5bd;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            word-wrap: break-word;
+            text-align: center;
+            color: #495057;
+            font-size: 14px;
+            display: none; /* Sembunyikan secara default */
+        }
+
+        /* Responsivitas (Media Query) */
+        @media (max-width: 600px) {
+            .api-key-container {
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .btn-generate {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="api-key-container">
+    <h2>🔑 API Key Generator</h2>
+    <form id="apiKeyForm">
+        
+        <div class="form-group">
+            <label for="appName">Nama Proyek/Aplikasi:</label>
+            <input type="text" id="appName" name="appName" placeholder="Contoh: Website E-commerce" required>
+        </div>
+
+        <div class="form-group">
+            <label for="environment">Lingkungan Penggunaan:</label>
+            <select id="environment" name="environment" required>
+                <option value="" disabled selected>Pilih Lingkungan</option>
+                <option value="development">Development (Pengembangan)</option>
+                <option value="staging">Staging (Pengujian)</option>
+                <option value="production">Production (Produksi/Live)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="rateLimit">Batas Panggilan Per Menit (Opsional):</label>
+            <input type="text" id="rateLimit" name="rateLimit" placeholder="Contoh: 100">
+        </div>
+        
+        <div class="form-group">
+            <label for="contactEmail">Email Kontak Utama:</label>
+            <input type="email" id="contactEmail" name="contactEmail" placeholder="nama@email.com" required>
+        </div>
+
+        <button type="submit" class="btn-generate">Generate API Key Baru</button>
+
+    </form>
+    
+    <div id="api-key-output">
+        **API Key Anda:** <br>
+        <span id="generatedKey"></span>
+    </div>
+
+</div>
+
+<script>
+    // Hanya untuk demo tampilan. Dalam implementasi nyata, 
+    // Anda akan mengirim data form ke backend untuk benar-benar menghasilkan kunci.
+    document.getElementById('apiKeyForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Mencegah form submit default
+        
+        // Data yang dikumpulkan (untuk dikirim ke server)
+        const appName = document.getElementById('appName').value;
+        const environment = document.getElementById('environment').value;
+        const rateLimit = document.getElementById('rateLimit').value;
+        const contactEmail = document.getElementById('contactEmail').value;
+
+        console.log("Data siap dikirim:", { appName, environment, rateLimit, contactEmail });
+
+        // Simulasi pembuatan API Key (misalnya, string acak)
+        const fakeApiKey = 'pk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        
+        // Tampilkan hasil
+        document.getElementById('generatedKey').textContent = fakeApiKey;
+        document.getElementById('api-key-output').style.display = 'block';
+        
+        // Di aplikasi nyata, Anda akan menggunakan fetch() atau AJAX
+        // untuk mengirim data di atas ke server Anda, yang kemudian akan
+        // menyimpan konfigurasi dan mengembalikan API key yang valid.
+    });
+</script>
+
+</body>
+</html>
